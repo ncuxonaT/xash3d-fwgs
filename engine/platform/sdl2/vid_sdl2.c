@@ -629,15 +629,13 @@ qboolean VID_CreateWindow( int width, int height, window_mode_t window_mode )
 {
 	string wndname;
 	qboolean maximized = vid_maximized.value != 0.0f;
-	Uint32 wndFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_MOUSE_FOCUS;
+	Uint32 wndFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI;
 	int xpos, ypos;
 	int num_displays = SDL_GetNumVideoDisplays();
 	SDL_Rect rect = { window_xpos.value, window_ypos.value, width, height };
 
 	Q_strncpy( wndname, GI->title, sizeof( wndname ));
 
-	if( vid_highdpi.value )
-		SetBits( wndFlags, SDL_WINDOW_ALLOW_HIGHDPI );
 	if( !glw_state.software )
 		SetBits( wndFlags, SDL_WINDOW_OPENGL );
 
@@ -1015,7 +1013,7 @@ rserr_t R_ChangeDisplaySettings( int width, int height, window_mode_t window_mod
 		SDL_SetWindowBordered( host.hWnd, SDL_TRUE );
 		SDL_SetWindowSize( host.hWnd, width, height );
 
-		VID_SaveWindowSize( width, height, true );
+		VID_SaveWindowSize( width, height, FBitSet( SDL_GetWindowFlags( host.hWnd ), SDL_WINDOW_MAXIMIZED ) != 0 );
 	}
 
 	return rserr_ok;
